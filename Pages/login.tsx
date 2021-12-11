@@ -1,13 +1,50 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useState } from 'react';
 import { Avatar,Button,Input} from 'react-native-elements';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { requestMicrophonePermissionsAsync } from 'expo-camera';
+import { StyleSheet, Text, View, TouchableOpacity, Alert, RefreshControlComponent } from 'react-native';
+import { Auth } from './controlers/services';
+import Loading from './components/modal-loading';
+import { useAsyncStorage } from '@react-native-async-storage/async-storage/jest/async-storage-mock';
+
 export default function Log(props: any) {
-  function LogIn(){
-    props.navigation.navigate('Lector QR');
+  const [password,setPassword] = useState(String);
+  const [user,setUser] = useState(String);
+  const [loading, setLoading] =  useState(false);
+  //Manrjadores de los inputs
+  const LogIn = async () =>{
+    setLoading(true);
+    if(password == "" || user == ""){
+      showAlert("Campos vacios","Favor de ingresar sus credenciales");
+      setLoading(false);
+    }else{
+      // se llama a la la api para la autenticacion
+      await Auth(user,password)
+      .then((result)=>{
+        setLoading(false);
+        if(result){
+          props.navigation.navigate('Lector QR');
+        }
+      }).catch((error)=>{
+        
+      });
+      
+    }
   }
+function showAlert(header: string, message: string){
+  Alert.alert(header,message,
+    [
+      {
+        text: "Aceptar",
+        style: "cancel"
+      }
+    ],
+      {
+        cancelable:true
+      }
+    )
+}
   return (
+    
     <View style={styles.container}>
         <StatusBar style="auto" />
         <View style={styles.avatarView}>
@@ -23,18 +60,26 @@ export default function Log(props: any) {
         <View style={styles.inputButtons}>
             <Input 
             placeholder = "Nombre de usuario"
+            onChangeText = {text => setUser(text)}
             leftIcon = {{type:'font-awesome', name: 'user'}}
             />
             <Input 
             placeholder = "Contraseña"
+            onChangeText = {pass =>setPassword(pass)}
             leftIcon = {{type:'font-awesome', name: 'lock'}}/>
             <TouchableOpacity style={styles.btnButton} onPress={LogIn}>
               <Text style = {styles.btnTexto} >Acceder</Text>
             </TouchableOpacity>
         </View>
         <View style={styles.footPage}>
-          <Text style={styles.footText}>Suinpac</Text>
+          <Text style={styles.footText}>SUINPAC</Text>
         </View>
+        <Loading 
+          transparent = {true}
+          loading = {loading}
+          loadinColor = {"#0000ff"}
+          onCancelLoad = {()=>{}}
+         />
       </View>
   );
 }
@@ -50,13 +95,11 @@ const styles = StyleSheet.create({
     flex: 2,
     flexDirection: 'row',
     alignItems: 'center',
-    //backgroundColor: 'red'
   },
   inputButtons : {
     flex: 3,
     flexDirection: 'column',
     margin:30,
-    //backgroundColor: 'green'
   },
   avatarElement : {
     flex: 1,
@@ -67,7 +110,9 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     alignItems: 'center',
     padding: 10,
-    backgroundColor: '#B20115',
+    backgroundColor: 'white',
+    borderWidth : 2,
+    borderColor: "#B20115",
     //backgroundColor: 'red'
   },
   footPage: {
@@ -79,7 +124,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   btnTexto: {
-    color: '#ffff',
+    color: '#B20115' ,
     fontWeight: 'bold'
   },
 });
