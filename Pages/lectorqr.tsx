@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
-import { View , Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
+import { View , Text,Vibration, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 import { Icon } from 'react-native-elements/dist/icons/Icon';
 import { Camera } from 'expo-camera';
 import * as Location from 'expo-location';
@@ -20,14 +20,26 @@ export default function Lector(props: any){
     }
     useEffect(() => {
         ComprobarPermisos();
-        ComprobarPermisosGPS();
+        //ComprobarPermisosGPS();
       }, []);
     const AcitvarCamara = () =>{
         setActiveScanner(!activeScanner);
     }
     const procesarScaneo = ({ type,data,bounds,cornerPoints}: BarCodeScannerResult) =>{
-        setActiveScanner(false);
+        //setActiveScanner(false);
+        Vibration.vibrate(100);
+        if(data.includes('http://v.servicioenlinea.mx/')){
+            console.log('URL Valida');
+        }else{
+            console.log('url invalida');
+        }
+        let urlData=data.split('?');
+
         props.navigation.navigate('Agregar al padron',{datos: data, tipo: type});
+        
+        console.log(urlData);
+
+
     }
       return (
         <View style = {styles.container}>

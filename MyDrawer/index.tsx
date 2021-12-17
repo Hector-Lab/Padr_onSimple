@@ -11,8 +11,8 @@ function MyDrawer() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name = "Bienvenido!" >
-          {props => <Home {...props} ></Home>}
+        <Stack.Screen name = "Lector QR!" >
+          {props => <LectorQR {...props} ></LectorQR>}
         </Stack.Screen>
         <Stack.Screen name = "Lector QR">
           {props => <LectorQR {...props} > </LectorQR>}
