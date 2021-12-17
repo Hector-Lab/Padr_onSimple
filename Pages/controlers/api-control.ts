@@ -30,5 +30,20 @@ export class APIServices {
             }
         );
     }
+    VerificarQRTombola(data:any){
+        let jsonData=JSON.stringify({cadena:data});
+        console.log(jsonData);
+        return fetch("https://api.servicioenlinea.mx/api-movil/RomperVoleto",
+            {
+                method:'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                    
+                },
+                body: jsonData
+            }
+        );
+    }
 
 }

@@ -1,40 +1,99 @@
 import React,{ useEffect, useState} from 'react';
-import { View, Text, StyleSheet,TouchableOpacity, Modal, ActivityIndicator,Picker } from 'react-native'
+import { View, Text,Vibration, StyleSheet,TouchableOpacity, Modal, ActivityIndicator,Picker } from 'react-native'
 import { Card ,Icon,Button, Input } from 'react-native-elements';
-import * as Location from 'expo-location'
-import { Route } from '@react-navigation/native';
+import { APIServices } from './controlers/api-control'; 
 export default function AgregarPadro(props:any ){
     const datetime = new Date();
-    //Lista de tipos del padron simple
-    const [padronTipos,setPadronTipos] = useState(["1 metro cuadrado - 10 MXN","Metro y medio - 12.50 MXN","dos metros cuadrados - 17.50 MXN","Puesto Fijo - 25.00 MXN","Mercado Ambulante - 30 MXN"]);
-    const [fechaActual,setFechaActual] = useState(String);
-    const [selectedValue,setSelectedValue ] = useState(String);
-    useEffect(()=>{
-        setFechaActual(`Fecha Actual: ${datetime.getFullYear()}-${(datetime.getMonth() + 1) > 10 ? (datetime.getMonth() + 1) :'0' + (datetime.getMonth() + 1)}-${datetime.getDate() > 10 ? datetime.getDate() : '0' + datetime.getDate()}` );
+    const warning='#e3e324';
+    const success='#46eb3b';
+    const error='#fa2525';
+    const [colorDefault,setColorDefault]=useState(success);
+    const [dataurl,setDataurl]=useState(String);
+    const [estatusUrl,setEstatusUrl]=useState(String);
+    const service = new APIServices();
+    const [resultApi,setResultApi]=useState(Object);        
+    useEffect(
+        ()=>{
+        let { datos} = props.route.params;
+        setDataurl(datos);
+        if(datos.includes('http://v.servicioenlinea.mx/')){
+            console.log('URL Valida');
+            let urlData=datos.split('?');
+
+            setEstatusUrl("");
+            setColorDefault('white');
+
+
+            try{
+                let credencialToken = service.VerificarQRTombola( urlData[1],);
+                credencialToken.then(result=>{
+                    if(result.ok){
+                        return result.json();
+                    }else{
+                        throw 'Error';
+                    }
+                }).then(data=>{
+                    let {Code,Result,Status}=data;
+                    if(Code==200){
+                        setEstatusUrl("¡¡¡ AGREGADO A LA TOMBOLA !!!");
+                        setColorDefault(success);
+                        setResultApi(Result[0]);
+                        console.log('Actualizacion');
+                        console.log(Result[0]);
+                        
+                    }
+                    else if (Code==423){
+
+                        setEstatusUrl("¡¡¡ TICKET YA REGISTRADO !!!");
+                        setColorDefault(warning);
+                        setResultApi(Result[0]);
+
+                        console.log(Result[0]);
+                    }
+                    else if (Code==404){
+                    setEstatusUrl("¡¡¡ TICKET NO ENCONTRADO !!!");
+                    setColorDefault(error);
+                    setResultApi(null);
+                    }
+                    else if (Code==403){
+                        setEstatusUrl("¡¡¡ TICKET NO VALIDO !!!");
+                        setColorDefault(error);
+                        setResultApi(null);
+                    }
+                    
+                }).catch(erroreResult=>{
+                    setEstatusUrl("ERROR AL VERFICIAR EL TICKET");
+                    setColorDefault(error);
+                    setResultApi(null);
+                });
+
+            }catch(errores){
+                console.log('En el catch');
+                console.log(errores);
+                setEstatusUrl("ERROR AL VERFICIAR EL TICKET");
+                setColorDefault(error);
+                setResultApi(null);
+            }  
+            
+            
+
+        }else{
+            setEstatusUrl("Formato del QR No Valido");
+            setColorDefault(error);
+        }
+        
     },[]);
     return (
         <View style = {styles.container}>
             <View style = {[styles.detallesView]}>
                 <Card>
-                    <Card.Title>{"Agregar al padrón"}</Card.Title>
+                    <Card.Title>{"Agregar Al Sorteo"}</Card.Title>
                     <Card.Divider/>
-                    <Text style = {styles.dataInfo}>{fechaActual}</Text>
-                    <Input placeholder = "Nombre o descricpión del local"></Input>
-                    <Picker style = {styles.dataInfo}
-                    // Tipos del padron simple
-                    selectedValue = {selectedValue}
-                    onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
-                    >
-                        <Picker.Item label = {"Seleccione una opción"} value = {-1}/>
-                        {
-                            padronTipos.map((item,index)=>{
-                            return <Picker.Item key={index} label = {item} value = {index}/>
-                            })
-                        }
-                    </Picker>
-                    <TouchableOpacity style = {styles.btn} onPress = {()=>{}}>
-                        <Text style = {styles.btnTexto}> Guardar </Text>
-                    </TouchableOpacity>
+                
+                    <Text style={{backgroundColor:colorDefault ,marginBottom:20,borderRadius:30,elevation:5,shadowColor:'grey',height:70,textAlign:'center',textAlignVertical:'center',fontWeight:'bold',fontSize:15}}>{estatusUrl}</Text>                
+                <Input value= { resultApi!=null? resultApi.Nombre:'' } disabled={true} label='Municipio:' ></Input>
+                <Input value= { resultApi!=null? resultApi.FechaTombola :''} disabled={true} label='Fecha De Registro:'></Input>
+                <Input value= {resultApi!=null? resultApi.Ticket:''} disabled={true} label='Ticket:'></Input>
                 </Card>
             </View>
             <View style = {styles.headerFooterView}>
@@ -42,8 +101,13 @@ export default function AgregarPadro(props:any ){
                     <Button icon = {<Icon name = "arrow-left-circle" type="feather" color =  "white" style = {{marginRight: 10}}/>} 
                             title = "Regresar" 
                             buttonStyle = {styles.btnRegresar}
-                            onPress = {()=>{}}
+                            onPress = {()=>{
+                                Vibration.vibrate(100);
+                                props.navigation.pop();
+                                
+                            }}
                             />
+
                 </View>
             </View>
             <Modal

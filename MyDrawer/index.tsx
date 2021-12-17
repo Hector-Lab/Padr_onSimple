@@ -20,7 +20,7 @@ function MyDrawer() {
         <Stack.Screen name = "Detalles del pago" >
           {props => <DetallePago {...props} > </DetallePago>}
         </Stack.Screen>
-        <Stack.Screen name = "Agregar al padron">
+        <Stack.Screen name = "Agregar A Tombola">
          {props => <AgregarPadro {...props}></AgregarPadro>} 
         </Stack.Screen>
       </Stack.Navigator>

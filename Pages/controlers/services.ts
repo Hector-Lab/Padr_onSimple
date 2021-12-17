@@ -26,7 +26,7 @@ export async function Auth(user: string, pass: string){
             return false;
         }
     }catch(error){
-        console.log(error.messege);
+        console.log(error);
         throw networkError;
     }
     //setDatosBasicos(result['token'],result['datosUsuario']['NombreCompleto'],result['idUsuario']);

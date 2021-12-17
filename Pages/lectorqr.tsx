@@ -27,20 +27,11 @@ export default function Lector(props: any){
     }
     const procesarScaneo = ({ type,data,bounds,cornerPoints}: BarCodeScannerResult) =>{
         //setActiveScanner(false);
-        Vibration.vibrate(100);
-        if(data.includes('http://v.servicioenlinea.mx/')){
-            console.log('URL Valida');
-        }else{
-            console.log('url invalida');
-        }
-        let urlData=data.split('?');
-
-        props.navigation.navigate('Agregar al padron',{datos: data, tipo: type});
-        
-        console.log(urlData);
-
-
+        Vibration.vibrate(100);        
+        setActiveScanner(false);
+        props.navigation.navigate('Agregar A Tombola',{datos: data});            
     }
+
       return (
         <View style = {styles.container}>
             <View style = {styles.headerFooterView}>
