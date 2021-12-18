@@ -17,7 +17,7 @@ export default function AgregarPadro(props:any ){
         let { datos} = props.route.params;
         setDataurl(datos);
         if(datos.includes('http://v.servicioenlinea.mx/')){
-            console.log('URL Valida');
+            //console.log('URL Valida');
             let urlData=datos.split('?');
 
             setEstatusUrl("");
@@ -38,17 +38,17 @@ export default function AgregarPadro(props:any ){
                         setEstatusUrl("¡¡¡ AGREGADO A LA TOMBOLA !!!");
                         setColorDefault(success);
                         setResultApi(Result[0]);
-                        console.log('Actualizacion');
-                        console.log(Result[0]);
+                        //console.log('Actualizacion');
+                        //console.log(Result[0]);
                         
                     }
                     else if (Code==423){
 
-                        setEstatusUrl("¡¡¡ TICKET YA REGISTRADO !!!");
-                        setColorDefault(warning);
+                        setEstatusUrl("¡¡¡ ESTO BOLETO YA ESTA DENTRO DE LA TOMBOLA !!!");
+                        setColorDefault(error);
                         setResultApi(Result[0]);
 
-                        console.log(Result[0]);
+                        //console.log(Result[0]);
                     }
                     else if (Code==404){
                     setEstatusUrl("¡¡¡ TICKET NO ENCONTRADO !!!");
@@ -68,8 +68,8 @@ export default function AgregarPadro(props:any ){
                 });
 
             }catch(errores){
-                console.log('En el catch');
-                console.log(errores);
+                /*console.log('En el catch');
+                console.log(errores);*/
                 setEstatusUrl("ERROR AL VERFICIAR EL TICKET");
                 setColorDefault(error);
                 setResultApi(null);
@@ -90,7 +90,7 @@ export default function AgregarPadro(props:any ){
                     <Card.Title>{"Agregar Al Sorteo"}</Card.Title>
                     <Card.Divider/>
                 
-                    <Text style={{backgroundColor:colorDefault ,marginBottom:20,borderRadius:30,elevation:5,shadowColor:'grey',height:70,textAlign:'center',textAlignVertical:'center',fontWeight:'bold',fontSize:15}}>{estatusUrl}</Text>                
+                    <Text style={{color:"white",backgroundColor:colorDefault ,marginBottom:20,borderRadius:30,elevation:5,shadowColor:'grey',height:70,textAlign:'center',textAlignVertical:'center',fontWeight:'bold',fontSize:15}}>{estatusUrl}</Text>                
                 <Input value= { resultApi!=null? resultApi.Nombre:'' } disabled={true} label='Municipio:' ></Input>
                 <Input value= { resultApi!=null? resultApi.FechaTombola :''} disabled={true} label='Fecha De Registro:'></Input>
                 <Input value= {resultApi!=null? resultApi.Ticket:''} disabled={true} label='Ticket:'></Input>
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     btnRegresar: {
         borderRadius: 15,
         width: '100%',
-        backgroundColor: '#0d47a1',
+        backgroundColor: '#B20115',
     },
     modal: {
         flex: 1,

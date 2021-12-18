@@ -27,7 +27,7 @@ export default function Lector(props: any){
     }
     const procesarScaneo = ({ type,data,bounds,cornerPoints}: BarCodeScannerResult) =>{
         //setActiveScanner(false);
-        Vibration.vibrate(100);        
+        Vibration.vibrate(100);  
         setActiveScanner(false);
         props.navigation.navigate('Agregar A Tombola',{datos: data});            
     }
